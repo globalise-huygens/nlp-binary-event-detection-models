@@ -1,0 +1,176 @@
+tokens,relationtype,label
+versoucken; versocht; verzoeken; versouck; verzoek; versoek; versoeken; versoeke; versoekt; versoecq; versoeck; versoecke; versochte; versoeckende; versocht; versouckende; versoecken; versoeckt; versouckt; verzogt,isOfType,Request
+leverantie; leverancie; leeverantie; leverantien; deleverantie,evokes,Transportation
+leverantie; leverancie; leeverantie; leverantien; deleverantie,evokes,Trade
+aenkomst; aenkomen; aencompst; aencompste; aankomende,isOfType,Arriving
+vertreck; vertrocken; vertreckende; vertrokken; vertrek; vertrecke; vertrekken; vertrecken,isOfType,Leaving
+voijagie; vojagie; voyagie; voijage; voyagien; voijagien,isOfType,Voyage
+affvaerdigen; affgevaerdigt,evokes,Leaving
+ontfangen; ontfangst; ontvangen; ontfange; ontvange,isOfType,Getting
+ontfangene; ontvangene,evokes,Getting
+geeven; geven; geevende; gevende; gaf; gaff; gaaven,isOfType,Giving
+affgeladene;  affgelaedene;  afladen; afflaaden; vollaaden; vollading,evokes,Transportation
+geladene; gelaadene; gelaedene,evokes,Transportation
+affgescheepte; gescheept; affgescheept; affschepen; afschepen,evokes,Transportation
+versonden; versondene; versenden; versond,evokes,Transportation
+affsenden; affgesonden; affgesondene; affsond,evokes,Transportation
+receptie; reseptie,isOfType,Getting
+besendinge; bezendingen; besending; besendingh; bezendinge; bezending; besendingen; retourbesending; retourbezending; bezendingh,evokes,Transportation
+cruijssen; kruissen; cruijsen; kruisen,isOfType,Translocation
+order; ordre; ordere; order; ordres; orders,evokes,Communication
+bevel; beveelen; beveelens,evokes,Communication
+verblijf; verblijff; verblyf; verblijv; verblyff; verblijft ,evokes,BeingAtAPlace
+quamen; comen; koomen; gekoomen; gekomen; gecomen; gecoomen; komende; koomende; komen,isOfType,Arriving
+transport; transporteren; transporteeren,isOfType,Transportation
+commando; gecommandeert,evokes,BeingLeader
+depart,isOfType,Leaving
+oorloge; oorlogh; oorlooge; oorlog,evokes,BeingInConflict
+sterfte; dood; doodt; stervte,evokes,BeingDead
+gestorven; sterven; sterfen; stierf; gesturven,isOfType,BeingDead
+arrivement; arrive,isOfType,Arriving
+overleden; overlijden; overledene,isOfType,BeingDead
+vermoorden; moorden; vermoord; vermoort,isOfType,Killing
+moord; moort,evokes,Killing
+gesneuvelt; sneuvelen; sneuvelt; gesneuvelde; sneuvelde,isOfType,Dying
+hazenpad; hasepad; hazepad,evokes,Leaving
+sieckelijk; siecte; sieckte,evokes,FallingIll
+vervoeren; vervoerde; vervoert; tevervoeren; overvoeren; vervoer; vervoerden,isOfType,Transportation
+aentasten,evokes,Attacking
+demolieren; demolieeren,isOfType,Destroying
+depescheren; depeche; depesche; depeches; depecheren; depecheeren,isOfType,Translocation
+verlaten; verlaat,isOfType,Leaving
+tocht; togt,isOfType,Voyage
+successeur; opvolger,evokes,Replacing
+overgaende; overgaen; overgaet; overgaend; overgaent,isOfType,Translocation
+reijse; reize; rheijse; rhijse; reijze; reijs; reise; rijse; reys; reyze; rheijze; rheijs; rijze; dereijse; rijze; rheyse; reis; rheys; ryse; ryze; rheise; reiz; uijtreijse; reyse,isOfType,Voyage
+afscheid,evokes,Leaving
+geconduiseert,evokes,Translocation
+gehoorende,evokes,HavingInPossession
+afgegeven,isOfType,Giving
+anker; ancker,evokes,BeingAtAPlace
+geligt,evokes,Leaving
+onderzeil,evokes,Leaving
+passeerden; passeren,isOfType,Translocation
+gemonteert,evokes,BeingAtAPlace
+gesaiseerd,isOfType,TakingUnderControl
+varen; vaaren; vaeren; tevaren,evokes,Translocation
+aliantie; alliantie,isOfType,Collaboration
+vruntschap; vrunden; vrundschap; vriendschap; vrindschap; vrintschap,evokes,BeingInARelationship
+debit; schulden,evokes,BeingInDebt
+aengelandt; aengelant; aangeland; aengeland,isOfType,Arriving
+gesonden; senden; zenden; toegesonden; toesenden,evokes,Translocation
+gekeert; wedergekeert; wederkeren; wederkeeren,isOfType,Translocation
+laden,evokes,Transportation
+blijven,evokes,BeingAtAPlace
+becomen,isOfType,Getting
+t'vervoeren,isOfType,Transportation
+verdestrueert; verdestrueren; verdestrueeren; destructie; destrueren; destrueeren,evokes,Destroying
+gelicht,evokes,Destroying
+handel,isOfType,Trade
+toecomen; toegecomen,isOfType,Translocation
+gewelt; geweldt; geweld,isOfType,ViolentContest
+executeren; executeeren; executien; executie,evokes,Killing
+verkoopen; verkopen; verkocht; verkochte; verkogt; verkogte,isOfType,Selling
+koopen; kopen; kocht; gekocht; gekochte; gekogt; gekogte,isOfType,Buying
+neersabelen; neersabelde,isOfType,Killing
+neergesabelt; neergesabelde,evokes,Killing
+eisch,evokes,Request
+voorraad; voorraed,evokes,HavingInPossession
+gevangen; gevangenen; gevangens; gevangenis,evokes,TakingUnderControl
+cruijssen; kruissen; cruijsen; kruisen,evokes,BeingAtAPlace
+straffen; gestraft; straft; testrafften; straffe,isOfType,Punishing
+straf; straffe; straff,evokes,Punishing
+oogst; oogsten; telen; oegsten,evokes,Production
+gevlugt; vlugten; vlugt,isOfType,Leaving
+executeren; executeeren,isOfType,Punishing
+executeren; executeeren,isOfType,Killing
+gaande,isOfType,Translocation
+compareerde,evokes,BeingAtAPlace
+aangecomen; aengecomen; gearriveert; gearriveerd,isOfType,Arriving
+diefte; diefstal; dief; dieverijen,evokes,Getting
+gebrooken; gebroken; breeken; breken,evokes,Damaging
+brengen; gebragt; gebracht,isOfType,Transportation
+antwoorden; geantwoord; antwoort;  geantwoort;  antwoord;  antwoor;  beantwoorden;  beandwoorden;  andwoord; antwoordende,isOfType,Communication
+bemant; bemand,evokes,HavingInPossession
+gemontheerd,evokes,HavingInPossession
+passagiers,evokes,Transportation
+verleene; verleend; verleende,isOfType,Giving
+regeert; regeeren; regeren; regeerd,isOfType,BeingLeader
+moordenaar; moordenaer; moordenaars; moordenaers,evokes,Killing
+betuijgen; betuijgt; betuijgde,isOfType,Communication
+requeste; request; reques; requast; requestje,isOfType,Request
+verslag,isOfType,Communication
+schenkagie; schenkage; schenckagie; schencagie; schenkagien; schenkkagie; schenkasie; ,evokes,Giving
+spreecken; spreeckende; bekentmaken; confereeren; declareren; expliceeren; vragen; vraagen; vragende; vraagende,isOfType,Communication
+heerschen; heersen; heerscht; heerschende; heersende; heerst,isOfType,BeingLeader
+supplicq; suppliceeren; suppliceert;  supplieq; supplicatie; supplicquen,isOfType,Request
+verzoekschrift; verzoekschriften,isOfType,Request
+smeekschrift; smeekschriften,isOfType,Request
+geschenk; geschenck; geschenckje; geschenkje; geschenke geschencke,evokes,Giving
+schenken; gechencken; geschenken; regaleeren;regaleren; gerelageert; relageert; relageerde,isOfType,Giving
+overschepen; overscheepen,evokes,Transportation
+ombrengen; ombrengt; ombrengende,isOfType,Killing
+massacreeren; gemassacreerde; massacre; massacreerde; gemassacreert; gemassacreerd,isOfType,Killing
+rebellije; rebelleerende; rebellie,isOfType,Uprising
+invasies; invasie; invadeeren; invaderen,isOfType,Invasion
+opstand; opstant,isOfType,Uprising
+rebellen; rebellige; rebelle,evokes,Uprising
+verwoesting; verwoesten; verwoestingen; verwoestinge,isOfType,Destroying
+vernieling; vernielen; vernielinge; vernielt; vernielde; vernield,isOfType,Damaging
+straffinge,evokes,Punishing
+lijfstraffe; kastijdinge; kastijdingen,isOfType,Punishing
+lijfstraffe; kastijdinge; kastijdingen,isOfType,Attacking
+revolte; revolteeren,isOfType,Uprising
+punitite; gepunieert,isOfType,Punishing
+uijtgezeijlt; uijtgezeijld; uitzeilen; uijtgeseijld; uijtseijlen,isOfType,Leaving
+trouwloosheijd; afvallige; ongehoorsaemheit; verraderijen; trouwlose; verdeeltheden,evokes,Unrest
+scheurbuijk; scheurbuik,evokes,FallingIll
+koorts; coorts,evokes,FallingIll
+siekten; ziekten; ziektens; siektens,evokes,FallingIll
+siek; ziek,isOfType,FallingIll
+zinken; sinken; sincken; zincken; gesonken; gesoncken; gezonken; gezoncken; sinckende; sinkende; zinkende; zinckende,isOfType,Sinking
+uijtgeplundert; uitplunderen; uijtplunderen; uijtgeplundert; plonderen; geplondert; uijtgeplondert,isOfType,Getting
+uijtgeplundert; uitplunderen; uijtplunderen; uijtgeplundert; plonderen; geplondert; uijtgeplondert,isOfType,Destroying
+verdrijving; verdrijven; verjagen,isOfType,ViolentContest
+doodslag,evokes,Killing
+schipbreuk,isOfType,Sinking
+plunderen; plundert; plunderende,isOfType,Getting
+plunderen; plundert; plunderende,evokes,ViolentContest
+roven; rooven; rovage,isOfType,Getting
+rover; roofster,evokes,Getting
+aanplanting; aanplantinge; beplanting; beplantinge; planting; plantinge; aanqueking; aenplanting; aenplantinge; aanqueek; aangeplante; aenplanten; aanplanten; aankweeken,evokes,Production
+cultivering; cultiveering; cultiveeren; cultiveren; cultiveerende; cultiverend; cultiveert; cultiveerde,isOfType,Production
+plantagie; plantagien; plantagies,evokes,Production
+attacqueeren; attacqueren,isOfType,Attacking
+vermeesteren; overmeesteren,isOfType,TakingUnderControl
+vermeesteren; overmeesteren,isOfType,ViolentContest
+oproer,evokes,Unrest
+verdelging; verdelginge; verdelgen; verdelgende; verdelgt; verdelgd; verdelgde,isOfType,Destroying
+belegeren; belegerde,isOfType,TakingUnderControl
+belegeren; belegerde,isOfType,Attacking
+banissement; bannissement,evokes,ForceToAct
+geeselen; geeseling; geesseling; gegeestelt; gegeselt; gegeeselt; gegeeseld; geeselde; gegeesselt,isOfType,Attacking
+geeselaar,evokes,Attacking
+brantmercken; brandmercken; brantmerken; brandmerken,isOfType,Attacking
+mulcteeren; gemulckteert,isOfType,Punishing
+brandmerk; brantmerk; brandtmerck; brandmerck; brantmerck; gebrantmerckt; gebrandmerckt; gebrandmerkt; gebrantmerckt,evokes,Attacking
+verbannen,evokes,ForceToAct
+confineeren; geconfineert; geconfineerd; geconfineerde,evokes,ForceToAct
+confineeren,isOfType,TakingUnderControl
+geconfineert; geconfineerd; geconfineerde,evokes,TakingUnderControl
+doodgeslagen,evokes,Killing
+arriveren; arriveeren; aantelanden; aanlanden,isOfType,Arriving
+bondgenoodschap; bondgenootschap; bontgenootschap; bontgenoodschap,isOfType,Collaboration
+bondgenoot; bondgenood; bontgenoot; bontgenood,evokes,Collaboration
+gedood; gedoot,evokes,Killing
+zeijlt; zeijld; zeilen; seijld; seijlen; gezeilt; gezeijlt,evokes,Translocation
+ordonnantie; d'ordonnantie,evokes,Communication
+vijanden; vijand; vijant; vyand; vijant,evokes,BeingInConflict
+komst,evokes,Arriving
+slavenhandel,isOfType,Trade
+slavenhandel,evokes,ForceToAct
+vegten; vechten,evokes,Attacking
+betalen; betaalen,isOfType,FinancialTransaction
+tol,evokes,FinancialTransaction
+conqueste; conqueeste ,evokes,TakingUnderControl
+repatrieren; gerepatrieerd; gerepatrieerde,evokes ,Translocation

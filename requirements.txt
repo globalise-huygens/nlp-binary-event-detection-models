@@ -1,0 +1,7 @@
+torch==2.2.2
+transformers==4.32.1
+evaluate==0.4.2
+datasets==3.0.2
+click==8.1.7
+numpy==2.2.0
+scikit-learn==1.5.2
