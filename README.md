@@ -14,6 +14,6 @@ The data on which I fine-tune is stored in "data". _get_data_selection.py_ uses 
 When running _finetune.sh_, 320 seperate models are fine-tuned (4 models x 5 seeds x 16 datasets), of which predictions are seperately stored. _finetune_with_click.py_ exports predictions of each fine-tuned model on the held-out document from the 16 ones available to a json file. In this json file, metadata on the test set and on the training arguments are also stored. Predictions on each of the 16 documents are gathered in folders that represent a model + seed combination (also reflected in the foldername, i.e. "GysBERT-553311"). These folders with predictions can be found in the "output_in_batches_nov20" folder.
 
 ## Evaluating the models
-
+.....
 
 
