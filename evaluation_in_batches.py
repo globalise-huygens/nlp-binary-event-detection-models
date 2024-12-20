@@ -365,30 +365,30 @@ def get_average_scores_table():
 
     return(all_scores)
 
-def get_std_dev_per_inv_nr():
+def get_std_dev_per_inv_nr(model, scoretype):
 
     results_per_model = []
-    models = ["bert-base-dutch-cased"]
+    #models = ["bert-base-dutch-cased", "GysBERT"]
     # table = per model + seed
-    for model in models:
+    #for model in models:
         #results_per_model = []
-        for seed in SEEDS:
-            results = create_table(model, seed)
-            results_per_model.append(results)
+    for seed in SEEDS:
+        results = create_table(model, seed)
+        results_per_model.append(results)
 
-    f1_dict = {}
+    score_dict = {}
     for nr in INV_NRS:
-        f1_dict[nr] = []
+        score_dict[nr] = []
     for seed_result in results_per_model:
         for dict in seed_result:
             for nr in INV_NRS:
                 #f1_invs = []
                 if dict['inv_nr'] == nr:
                     #f1_invs.append(dict['f1-event'])
-                    f1_dict[dict['inv_nr']].append(dict['R-event'])
+                    score_dict[dict['inv_nr']].append(dict[scoretype])
 
     std_devs = []
-    for key, value in f1_dict.items():
+    for key, value in score_dict.items():
         sqd_diffs = []
         #print(len(value))
         mean = sum(value)/len(value)
@@ -399,8 +399,40 @@ def get_std_dev_per_inv_nr():
         std_devs.append(math.sqrt((sum(sqd_diffs) / 5))) # 5 = len(SEEDS)
 
 
-    return(f1_dict, std_devs)
+    return(score_dict, std_devs)
 
+def get_avg_std_comp1():
+
+    models = ["GysBERT", "GysBERT-v2", "xlm-roberta-base", "bert-base-dutch-cased"]
+    scoretypes = ['P-event', 'R-event', 'f1-event']
+    scores = {}
+
+    for model in models:
+        per_model = {}
+        for scoretype in scoretypes:
+            std_dev = get_dev_between_seeds(model, scoretype)
+            per_model[scoretype] = std_dev
+            scores[model] = per_model
+
+    return(scores)
+
+def get_avg_std_comp2():
+
+    models = ["GysBERT", "GysBERT-v2", "xlm-roberta-base", "bert-base-dutch-cased"]
+    scoretypes = ['P-event', 'R-event', 'f1-event']
+    scores = {}
+
+    for model in models:
+        per_model = {}
+        for scoretype in scoretypes:
+            score_dict, std_devs = get_std_dev_per_inv_nr(model, scoretype)
+            per_model[scoretype] = sum(std_devs) / len(std_devs)
+            scores[model] = per_model
+
+    return(scores)
+
+
+######## getting results and exporting tables
 
 print("AVERAGE SCORES EVERYTHING")
 average_scores = get_average_scores_table()
@@ -410,21 +442,17 @@ print(average_scores)
 #print(average_scores_globertise)
 
 df = pd.DataFrame.from_dict(average_scores)
-df.to_csv('AVERAGES.csv', sep='\t')
+df.to_csv('results/AVERAGES.csv', sep='\t')
 
 
+print("Standard Deviation")
+# comp 1 = calculating standard deviation between the average scores of a model+seed combination
+scores_std_1=get_avg_std_comp1()
+df = pd.DataFrame.from_dict(scores_std_1)
+df.to_csv('results/stand_dev_comp1.csv', sep='\t')
 
+# comp 2 = calculate standard deviation between models fine-tuned on the same datasplit and with the same seed and averaging standard deviation scores over datasplits and seeds per model afterwards
+scores_std_2=get_avg_std_comp2()
+df = pd.DataFrame.from_dict(scores_std_2)
+df.to_csv('results/stand_dev_comp2.csv', sep='\t')
 
-#f1s, std_devs = get_std_dev_per_inv_nr()
-#print(f1s)
-#print()
-#print(std_devs)
-
-#avg_st_dev = sum(std_devs) / len(std_devs)
-#print(avg_st_dev)
-
-
-#### later, check for all models which documents have lowest mean f1 and highest standard dev
-
-#dev = get_dev_between_seeds("GysBERT", 'f1-event')
-#print(dev)
