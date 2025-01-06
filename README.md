@@ -22,5 +22,5 @@ For token-level binary event detection, precision, recall, and f1 are calculated
 
 Mention-level scores are calculated as an accuracy score. If one or more of the tokens within a gold event mention span (i.e. "ordonnantie" in "d'ordonnantie ende last") is recognized as an event token in the predictions, we see it as overlap. For the example data given above, the accuracy would be 100%. 
 
-The next step is analysing all results on model-level. In the "results" folder, __AVERAGES.csv__ schows the average score per model (i.e. averaged over seeds and dataplits). 
+The next step is analysing all results on model-level. In the "results" folder, __AVERAGES.csv__ schows the average score per model (i.e. averaged over seeds and datasplits). For example, the scores for xlm-r are the averages of the scores reorted in tables "table_xlm-roberta-base_6834.csv", "table_xlm-roberta-base_888.csv", "table_xlm-roberta-base_553311.csv", "table_xlm-roberta-base_21102024.csv", and "table_xlm-roberta-base_23052024.csv". In the averages table, only precision, recall and f1 for the event class are reported, as this is the only score that is truly of interest. 
 
