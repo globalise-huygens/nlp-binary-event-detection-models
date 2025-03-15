@@ -9,11 +9,14 @@ def read_settings(filepath):
         settings = json.load(json_file)
 
     tokenizer = initiate_tokenizer(settings)
-    testfile_names = settings['metadata_testfile']['original_filename']
+    testfile_name = settings['metadata_testfile']['original_filename']
 
-    return settings, tokenizer, testfile_names
+    return settings, tokenizer, testfile_name
 
 def count_gold_events(tokens, gold):
+    """
+    Counts amount of tokens annotated with I-event in a given part of the data
+    """
     events=0
     zipped = zip(tokens, gold)
     for t, g in zipped:
@@ -25,9 +28,6 @@ def count_gold_events(tokens, gold):
 
 
 def calculate_score_event_class(predictions, gold):
-    """
-
-    """
     tn=0
     tp=0
     fn=0
@@ -45,13 +45,18 @@ def calculate_score_event_class(predictions, gold):
             if pred != gold and gold == "O":
                 fp+=1
 
+    # allow for no predictions
     try:
         precision = tp / (tp+fp)
-        recall = tp / (tp+fn)
-        f1 = 2 * (precision * recall) / (precision + recall)
     except ZeroDivisionError:
         precision = 0
+    try:
+        recall = tp / (tp + fn)
+    except ZeroDivisionError:
         recall = 0
+    try:
+        f1 = 2 * (precision * recall) / (precision + recall)
+    except ZeroDivisionError:
         f1 = 0
 
     return(precision, recall, f1)
@@ -74,20 +79,44 @@ def calculate_score_no_class(predictions, gold):
             if pred != gold and gold == "O":
                 fn+=1
 
-    precision = tp / (tp+fp)
-    recall = tp / (tp+fn)
-    f1 = 2 * (precision * recall) / (precision + recall)
+    #precision = tp / (tp+fp)
+    #recall = tp / (tp+fn)
+    #f1 = 2 * (precision * recall) / (precision + recall)
+
+    # allow for no predictions
+    try:
+        precision = tp / (tp+fp)
+    except ZeroDivisionError:
+        precision = 0
+
+    try:
+        recall = tp / (tp+fn)
+    except ZeroDivisionError:
+        recall = 0
+
+    try:
+        f1 = 2 * (precision * recall) / (precision + recall)
+    except ZeroDivisionError:
+        f1 = 0
 
     return(precision, recall, f1)
 
 def calculate_macro_avg(precision1, precision2, recall1, recall2):
     mavg_p = (precision1+precision2)/2
     mavg_r = (recall1+recall2)/2
-    mavg_f1 =  2 * ((    ((precision1+precision2)/2)    * ((recall1+recall2)/2)   ) /  (  ((precision1+precision2)/2) + ((recall1+recall2)/2)  ) )
+    try:
+        mavg_f1 =  2 * ((    ((precision1+precision2)/2)    * ((recall1+recall2)/2)   ) /  (  ((precision1+precision2)/2) + ((recall1+recall2)/2)  ) )
+    except ZeroDivisionError:
+        mavg_f1 = 0
 
     return(mavg_p, mavg_r, mavg_f1)
 
 def delete_multiple_at_indices(lst, indices):
+    """
+    This function is used by token_level_per_sentence, which sends indices of any labels that are not linked to
+    any first subtoken of a complete token. This function deletes those labels so that we get matching
+    lists of tokens and labels.
+    """
     # Sort indices in descending order
     new_list = []
     for i in range(0, len(lst)):
@@ -99,13 +128,15 @@ def delete_multiple_at_indices(lst, indices):
 
 def token_level_per_sentence(sentence, predictions, gold, tokenizername):   ###Chatgpt was used for this
     """
-
+    According to the tokenizer used, this function joins subtokens back together in the original tokens
+    as extracted from Inception and saves the label of the first subtoken of each token.
+    This happens on sentence level, i.e., each time one Inception text region is inputted to the function.
     """
 
     joined_tokens = []
     current_token = ""
     to_delete = []
-    if tokenizername.startswith("emanjavacas"):
+    if tokenizername.startswith("emanjavacas") and not tokenizername.startswith('emanjavacas/MacBERTh'):
         for i, tok in enumerate(sentence):
             if tok.startswith('##'):
                 current_token += tok[2:]  # Append without '##'
@@ -120,7 +151,8 @@ def token_level_per_sentence(sentence, predictions, gold, tokenizername):   ###C
         if current_token:
             joined_tokens.append(current_token)# + current_token[2:])
 
-    if tokenizername.startswith("GroNLP"):
+
+    if tokenizername.startswith('emanjavacas/MacBERTh'):
         for i, tok in enumerate(sentence):
             if tok.startswith('##'):
                 current_token += tok[2:]  # Append without '##'
@@ -134,12 +166,12 @@ def token_level_per_sentence(sentence, predictions, gold, tokenizername):   ###C
         # If there's a current token left to add, append it
         if current_token:
             joined_tokens.append(current_token)# + current_token[2:])
+            if '[SEP]' in joined_tokens:
+                joined_tokens.remove('[SEP]') # filter out [SEP]
 
-    if tokenizername.startswith("pdelobelle"):
+    if tokenizername.startswith("GroNLP") or tokenizername.startswith("bert-base-multilingual-cased") or tokenizername.startswith('google-bert'):
         for i, tok in enumerate(sentence):
-            #print(tok)
-            if tok.startswith('Ġ'):
-             #   print('subtoken detected', tok)
+            if tok.startswith('##'):
                 current_token += tok[2:]  # Append without '##'
                 to_delete.append(i)
             else:
@@ -155,7 +187,7 @@ def token_level_per_sentence(sentence, predictions, gold, tokenizername):   ###C
     new_preds = delete_multiple_at_indices(predictions, to_delete)
     new_gold = delete_multiple_at_indices(gold, to_delete)
 
-    if tokenizername.startswith("globert"):
+    if tokenizername.startswith("globert"): ### this code is not used at the moment
         # Result containers
         joined_tokens = []
         new_preds = []
@@ -194,7 +226,7 @@ def token_level_per_sentence(sentence, predictions, gold, tokenizername):   ###C
                     new_preds.append(current_label)
                     new_gold.append(current_gold)
 
-    if tokenizername.startswith("FacebookAI"):
+    if tokenizername.startswith("FacebookAI/xlm"):
         # Result containers
         joined_tokens = []
         new_preds = []
@@ -226,13 +258,64 @@ def token_level_per_sentence(sentence, predictions, gold, tokenizername):   ###C
                 new_preds.append(current_label)
                 new_gold.append(current_gold)
 
+    if tokenizername.startswith("pdelobelle") or tokenizername.startswith("FacebookAI/roberta"):
+
+        # clean up encoding errors
+        new_subtokens = []
+        for subtoken in sentence:
+            if subtoken == 'ĠâĢĶ':
+                new_subtokens.append('Ġ—')
+            if subtoken == 'âĢĶ':
+                new_subtokens.append('—')
+            if subtoken == 'ĠÆĴ':
+                new_subtokens.append('Ġƒ')
+            if subtoken == 'ÆĴ':
+                new_subtokens.append('ƒ')
+            if subtoken == 'ĠâĢŀ':
+                new_subtokens.append('Ġ„')
+            if subtoken == 'âĢŀ':
+                new_subtokens.append('„')
+            if subtoken == 'ĠÂ½':
+                new_subtokens.append('Ġ½')
+            if subtoken == 'Â½':
+                new_subtokens.append('½')
+            if subtoken != 'ĠâĢĶ' and subtoken != 'ĠÆĴ' and subtoken != 'ĠâĢŀ' and subtoken != 'ĠÃ½' and subtoken != 'âĢĶ' and subtoken != 'ÆĴ' and subtoken != 'âĢŀ' and subtoken != 'Ã½':
+                new_subtokens.append(subtoken)
+
+        joined_tokens = []
+        new_preds = []
+        new_gold = []
+
+        # Temporary variables for the current word being built
+        current_token = ""
+        current_label = None
+        current_gold = None
+
+        for i, (subtoken, label, gold) in enumerate(zip(new_subtokens, predictions, gold)):
+            print(subtoken, label, gold)
+            if subtoken.startswith('Ġ'):  # new word detected
+                # If we already have a word being built, save it
+                if current_token:
+                    joined_tokens.append(current_token)
+                    new_preds.append(current_label)
+                    new_gold.append(current_gold)
+                # Start a new word
+                current_token = subtoken.lstrip('Ġ')  # Remove leading '▁' for the word
+                current_label = label
+                current_gold = gold
+            else:
+                # Append the subtoken to the current word
+                current_token += subtoken
+
+            # Handle the last token (flush remaining word)
+            if i == len(sentence) - 1:
+                joined_tokens.append(current_token)
+                new_preds.append(current_label)
+                new_gold.append(current_gold)
+
     return joined_tokens, new_preds, new_gold
 
-
 def interpolate(subtokens, predictions, gold, tokenizername):
-    #print(len(subtokens))
-    #print(len(predictions))
-    #print(len(gold))
     interpolated_tokens = []
     interpolated_predictions = []
     interpolated_gold = []
@@ -247,22 +330,23 @@ def interpolate(subtokens, predictions, gold, tokenizername):
 
 def write_preds_to_file(output_dir, tokens, predictions, gold, settings):
     df = pd.DataFrame() #create dataframe
-    #flatten list of lists (list per paragraph)
-    tokens = [item for row in tokens for item in row]
-    predictions = [item for row in predictions for item in row]
-    gold = [item for row in gold for item in row]
 
     #assign columns
     df['token'] = tokens
     df['prediction'] = predictions
     df['gold'] = gold
 
-    lex_tokens = lexical_baseline.parse_lexicon("lexicon_v3.csv")
+    lex_tokens = lexical_baseline.parse_lexicon("lexicon_v4.csv") #latest version of the lexicon, also the one released
     lexical_base = lexical_baseline.label_with_lexicon(lex_tokens, tokens)
     df['lexical'] = lexical_base # add lexical baseline predictions to csv with predicted labels per token
 
     #write to file with filename corresponding to model and test file used
-    df.to_csv(output_dir+'/predictions_'+str(settings['metadata'][0]['inv_nr'])+'_'+str(settings['metadata'][0]['year'])+'_'+settings['model'].split('/')[1]+'.csv', sep='\t', index=False)
+    try:
+        df.to_csv(output_dir+'/predictions_'+str(settings['metadata_testfile']['inv_nr'])+'_'+str(settings['metadata_testfile']['year'])+'_'+settings['model'].split('/')[1]+'_'+str(settings['seed'])+'.csv', sep='\t', index=False)
+    except IndexError:
+        df.to_csv(output_dir + '/predictions_' + str(settings['metadata_testfile']['inv_nr']) + '_' + str(
+            settings['metadata_testfile']['year']) + '_' + settings['model'] + '_' + str(
+            settings['seed']) + '.csv', sep='\t', index=False)
 
 def get_datastats(tokens, predictions, gold):
     tokens = [item for row in tokens for item in row]
@@ -279,7 +363,10 @@ def get_datastats(tokens, predictions, gold):
         if label == 'I-event':
             eventcount_p += 1
 
-    gold_density = ((eventcount_g / token_count) * 100)
+    try:
+        gold_density = ((eventcount_g / token_count) * 100)
+    except ZeroDivisionError:
+        gold_density = 0
 
     return token_count, eventcount_g, eventcount_p, gold_density
 

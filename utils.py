@@ -20,8 +20,11 @@ def read_data(paths):
             corpus.append(sentence)
 
     return(corpus)
-
 def tokenize_and_choose_label(tokenizer, corpus):
+    """
+    Inception outputs tokenized text. This function tokenizes these tokens into subtokens and labels them with their corresponding annotation
+    """
+
     new_corpus = []
     for sen in corpus:
         new_sen = []
@@ -52,7 +55,47 @@ def tokenize_and_choose_label(tokenizer, corpus):
 
     return(new_corpus)
 
+def tokenize_and_choose_label_robbert(tokenizer, corpus):
+    """
+    Inception outputs tokenized text. This function tokenizes these tokens into subtokens and labels them with their corresponding annotation
+    especially for RobBERT and RoBERTa: adding a space to each token at the beginning becauase the model otherwise does not record the beginning of a token in their tokenization (missing what is a subtoken and what is a token)
+    """
+    new_corpus = []
+    for sen in corpus:
+        new_sen = []
+        for item in sen:
+            word = item[0]
+            label = item[1]
+            tokenized_input = tokenizer(' '+word)
+            tokenized_word = tokenizer.convert_ids_to_tokens(tokenized_input["input_ids"])[
+                             1:-1]  # check if for all models you should do this
+            token_id = tokenized_input["input_ids"][1:-1]
+
+            if label == 'I-event' or label == 'B-event':
+                new_labels = []
+                tags = []
+                for subword in tokenized_word:
+                    new_labels.append(1)
+                    tags.append('I-event')
+                new_datapoint = (tokenized_word, tags, new_labels, token_id)
+                new_sen.append(new_datapoint)
+            if label == 'O':
+                new_labels = []
+                tags = []
+                for subword in tokenized_word:
+                    new_labels.append(0)
+                    tags.append('O')
+                new_datapoint = (tokenized_word, tags, new_labels, token_id)
+                new_sen.append(new_datapoint)
+        new_corpus.append(new_sen)
+
+    return (new_corpus)
+
+
 def prepare_data(corpus):
+    """
+    Converts the data to input to finetune a LM
+    """
     new_tokens = []
     new_labels = []
     tok_per_sen = []
@@ -141,16 +184,22 @@ def get_filepaths(filepaths, testfile_names):
     trainfile_paths = [x for x in filepaths if x not in testfile_paths] #get all paths that are not testfile paths
     return(trainfile_paths, testfile_paths)
 
-def construct_datadicts(tokenizer, filepaths, testfile_names):
+def construct_datadicts(tokenizername, tokenizer, filepaths, testfile_names):
     trainpaths, testpaths = get_filepaths(filepaths, testfile_names)
 
     corpus_tr = read_data(trainpaths)
-    tokenized_and_labeled_tr = tokenize_and_choose_label(tokenizer, corpus_tr)
+    corpus_te = read_data(testpaths)
+
+    if tokenizername.startswith('pdelobelle') or tokenizername.startswith("FacebookAI/roberta"): #add spaces to each token when using robbert so that it marks subtokens during procesing
+        tokenized_and_labeled_tr = tokenize_and_choose_label_robbert(tokenizer, corpus_tr)
+        tokenized_and_labeled_te = tokenize_and_choose_label_robbert(tokenizer, corpus_te)
+    else:
+        tokenized_and_labeled_tr = tokenize_and_choose_label(tokenizer, corpus_tr)
+        tokenized_and_labeled_te = tokenize_and_choose_label(tokenizer, corpus_te)
+
     prepared_tr = prepare_data(tokenized_and_labeled_tr)
     train_data = restructure_and_truncate(prepared_tr)
 
-    corpus_te = read_data(testpaths)
-    tokenized_and_labeled_te = tokenize_and_choose_label(tokenizer, corpus_te)
     prepared_te = prepare_data(tokenized_and_labeled_te)
     test_data = restructure_and_truncate(prepared_te)
 

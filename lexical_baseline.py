@@ -1,6 +1,9 @@
 import pandas as pd
 
 def parse_lexicon(path_to_lexicon):
+    """
+    Reads a csv and parses the lexicon (semicolons separating tokens, different columns separating tokens and type)
+    """
     df = pd.read_csv(path_to_lexicon)
     tokens = df['tokens'].tolist()
     labels = df['label'].tolist()
@@ -35,6 +38,9 @@ def label_with_lexicon(lex_tokens, tokens):
     return(labels)
 
 def evaluate_baseline(labels, gold):
+    """
+    Calculates precision, recall and f1 for binary event detection using lexical baseline
+    """
     tp_e = 0
     fp_e = 0
     fn_e = 0

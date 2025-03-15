@@ -2,10 +2,10 @@
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=18
-#SBATCH --gpus=1
+#SBATCH --gpus=2
 #SBATCH --partition=gpu
-#SBATCH --time=05:00:00
-#SBATCH --output=batchtraining.out
+#SBATCH --time=1:00:00
+#SBATCH --output=macberth.out
 
 module load 2022
 module load Python/3.10.4-GCCcore-11.3.0
@@ -25,9 +25,9 @@ scp -r $HOME/globalise/operation_autumn/data "$TMPDIR"/data
 
 
 # Define the array
-inv_nrs=('1160' '1066' '7673' '11012' '9001' '3598' '1348' '4071' '1090' '1430' '2665' '1439' '1595' '2693' '3476' '8596')
-modelnames= ('emanjavacas/GysBERT-v2' 'FacebookAI/xlm-roberta-base' 'pdelobelle/robbert-v2-dutch-base' 'emanjavacas/GysBERT' 'GroNLP/bert-base-dutch-cased') #('../globertise/trial/models/checkpoint-10000')
-seeds=(21102024 553311 6834 888 23052024)
+inv_nrs=('1160' '1066' '7673' '11012' '9001' '1348' '4071' '1090' '1430' '2665' '1439' '1595' '2693' '3476' '8596') #, '3598')
+modelnames=('emanjavacas/GysBERT-v2' 'FacebookAI/xlm-roberta-base' 'pdelobelle/robbert-v2-dutch-base' 'emanjavacas/GysBERT' 'GroNLP/bert-base-dutch-cased' 'bert-base-multilingual-cased', 'emanjavacas/MacBERTh', 'FacebookAI/roberta-base' 'google-bert/bert-base-cased')
+seeds=(23052024 21102024 553311 6834 888)
 
 
 # Loop over seeds

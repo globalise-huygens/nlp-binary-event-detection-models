@@ -13,7 +13,25 @@ import os
 from datetime import date
 import click
 
+OUTPUT_PATH = 'output_in_batches/'
+
 def create_settings(root_path, inv_nr, tokenizername, modelname, seed, label_list):
+    """
+    Creates a dictionary containing information necessary for finetuning as well as metadata necessary for
+    analysis further down the line. The dictionary will contain
+    - data on the document that will be NOT finetuned but tested on:
+        - filename
+        - round in which it was annotated
+        - inventory number of the document (which we use as identifier)
+        - page numbers of the document
+        - year the document was written in
+        - range of half a century in which this yeat falls
+    - data on the finetuning settings
+        - model to be used
+        - tokenizer to be used
+        - seed to be used
+        - list of labels in finetuning task
+    """
     settings = file_selection_invnr(root_path, inv_nr)
     settings['tokenizer'] = tokenizername
     settings['model'] = modelname
@@ -22,6 +40,10 @@ def create_settings(root_path, inv_nr, tokenizername, modelname, seed, label_lis
     return(settings)
 
 def initiate(settings, root_path):
+    """
+    prepares for finetuning by loading the correct tokenizer, getting paths to the training data and initiating a pre-trained model
+    """
+    tokenizername = settings['tokenizer']
     tokenizer = initiate_tokenizer(settings)
     testfile_names = settings['metadata_testfile']['original_filename']
     filepaths = get_filepath_list(root_path)
@@ -35,7 +57,7 @@ def initiate(settings, root_path):
 
     data_collator = DataCollatorForTokenClassification(tokenizer=tokenizer)
 
-    return(tokenizer, testfile_names, filepaths, model, data_collator)
+    return(tokenizername, tokenizer, testfile_names, filepaths, model, data_collator)
 
 
 
@@ -47,22 +69,10 @@ def initiate(settings, root_path):
 @click.option('--modelname', type=click.STRING)
 @click.option('--label_list', type=click.STRING)
 def main(root_path, inv_nr, tokenizername, modelname, seed, label_list):
-
-    set_seed(seed)
-    torch.backends.cudnn.deterministic = True
-    today = date.today()
-    seqeval = evaluate.load("seqeval")
-    os.environ["TOKENIZERS_PARALLELISM"] = "false"
-
-    settings = create_settings(root_path, inv_nr, tokenizername, modelname, seed, label_list)
-    tokenizer, testfile_names, filepaths, model, data_collator = initiate(settings, root_path)
-    prepared_tr, train_data, test_data, prepared_te = construct_datadicts(tokenizer, filepaths, testfile_names)
-
-    train = Dataset.from_list(train_data)
-    test = Dataset.from_list(test_data)
-
-    for param in model.parameters(): param.data = param.data.contiguous()
-
+    """
+    finetunes a model
+    """
+    # check versioning on external server
     print("VERSIONS")
     print(transformers.__version__)
     print(evaluate.__version__)
@@ -70,9 +80,29 @@ def main(root_path, inv_nr, tokenizername, modelname, seed, label_list):
     # on snellius: 4.32.1
     # 0.4.2
 
+    # set a seed to make sure results are reproducible
+    set_seed(seed)
+    torch.backends.cudnn.deterministic = True
+    today = date.today()
+    seqeval = evaluate.load("seqeval")
+    os.environ["TOKENIZERS_PARALLELISM"] = "false"
+
+    # load settings according to parameters given via click
+    settings = create_settings(root_path, inv_nr, tokenizername, modelname, seed, label_list)
+
+    # prepare tokenizer, paths to training data, load pre-trained model and data collator
+    tokenizername, tokenizer, testfile_names, filepaths, model, data_collator = initiate(settings, root_path)
+
+    # prepare the data as extracted from Inception to a json file that can be finetuned with
+    prepared_tr, train_data, test_data, prepared_te = construct_datadicts(tokenizername, tokenizer, filepaths, testfile_names)
+    train = Dataset.from_list(train_data)
+    test = Dataset.from_list(test_data)
+
+    for param in model.parameters(): param.data = param.data.contiguous()
+
     def compute_metrics(p):
         """
-        computes scores per eval_step and saves predictions
+        computes scores per eval_step and saves predictions in settings file
         """
         predictions, labels = p
         predictions = numpy.argmax(predictions, axis=2)
@@ -109,6 +139,7 @@ def main(root_path, inv_nr, tokenizername, modelname, seed, label_list):
             "accuracy": results["overall_accuracy"],
         }
 
+    # set parameters
     learning_rate = 5e-5
     per_device_train_batch_size = 32
     per_device_test_batch_size = 32
@@ -141,10 +172,17 @@ def main(root_path, inv_nr, tokenizername, modelname, seed, label_list):
     )
     print("Start training")
 
+    # train
     trainer.train()
-    modelname = settings['model'].split('/')[1]
 
-    with open('output_in_batches_globertise/'+str(settings['seed'])+'_'+modelname+'/settings'+str(today)+'_'+str(settings['metadata_testfile']['inv_nr'])+'.json', 'w') as fp:
+    # make sure the settings file containing predictions for each file with metadata are saved
+    # this code assumes a folder structure where OUTPUT_PATH branches out in folders with names SEED_MODEL (for example 888_GysBERT)
+    try:
+        modelname = settings['model'].split('/')[1]
+    except IndexError: #for mbert
+        modelname = settings['model']
+
+    with open(OUTPUT_PATH+str(settings['seed'])+'_'+modelname+'/settings'+str(today)+'_'+str(settings['metadata_testfile']['inv_nr'])+'.json', 'w') as fp:
         json.dump(settings, fp)
 
 if __name__ == '__main__':
