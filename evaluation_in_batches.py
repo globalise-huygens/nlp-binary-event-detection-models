@@ -13,7 +13,7 @@ ROOT_PATH = "data/json_per_doc/"
 INV_NRS = ['1160', '1066', '7673', '11012', '9001', '1090', '1430', '2665', '1439', '1595', '2693', '3476', '8596', '1348', '4071'] #, '3598']
 SEEDS = ['21102024', '23052024', '888', '553311', '6834']
 INPUT_FOLDER = 'output_in_batches/' #'output_in_batches_english_models'
-DATE = '2025-02-04' #for english models '2025-02-10' #for Dutch models '2025-02-04' # date on which models were fine-tuned and predictions were written to settingsfile, i.e. date on which 'finetune.sh' was run
+DATE = '2025-02-04' #for english models '2025-02-10' #for Dutch models '2025-02-04' # date on which models were fine-tuned and predictions were written to settingsfile, i.e. date on which 'finetune.sh' was run.
 
 
 def preprocess_tokens(predictions, subtokens, gold, settings):
