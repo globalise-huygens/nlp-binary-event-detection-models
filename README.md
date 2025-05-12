@@ -24,3 +24,7 @@ Mention-level scores are calculated as an accuracy score. If one or more of the 
 
 The next step is analysing all results on model-level. In the "results" folder, __AVERAGES.csv__ schows the average score per model (i.e. averaged over seeds and datasplits). For example, the scores for xlm-r are the averages of the scores reorted in tables "table_xlm-roberta-base_6834.csv", "table_xlm-roberta-base_888.csv", "table_xlm-roberta-base_553311.csv", "table_xlm-roberta-base_21102024.csv", and "table_xlm-roberta-base_23052024.csv". In the averages table, only precision, recall and f1 for the event class are reported, as this is the only score that is truly of interest. 
 
+## CRF baseline
+I train a Conditional Random Forest with features to compare the Language Models' performance with (as well as a lexical baseline). The main feature for this model are token embeddings derived with a specialized word2vec model, trained on our VOC corpus. The model and its documentation can be found [here](https://zenodo.org/records/15038313). To run crf_baselines.py you will need to download the word2vec model (and save it locally, in the code the hardcoded filepath is 'word2vec/GLOBALISE.word2vec')
+
+
