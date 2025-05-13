@@ -12,8 +12,8 @@ import math
 ROOT_PATH = "data/json_per_doc/"
 INV_NRS = ['1160', '1066', '7673', '11012', '9001', '1090', '1430', '2665', '1439', '1595', '2693', '3476', '8596', '1348', '4071'] #, '3598']
 SEEDS = ['21102024', '23052024', '888', '553311', '6834']
-INPUT_FOLDER = 'output_in_batches/' #'output_in_batches_english_models'
-DATE = '2025-02-04' #for english models '2025-02-10' #for Dutch models '2025-02-04' # date on which models were fine-tuned and predictions were written to settingsfile, i.e. date on which 'finetune.sh' was run.
+INPUT_FOLDER = 'output_in_batches_GloBERTise/'
+DATE = '2025-05-13' #'2025-02-04' ' #'2025-04-24' #'2025-04-11'  #'2025-02-04' #for english models '2025-02-10' #for Dutch models '2025-02-04' # date on which models were fine-tuned and predictions were written to settingsfile, i.e. date on which 'finetune.sh' was run.
 
 
 def preprocess_tokens(predictions, subtokens, gold, settings):
@@ -90,7 +90,7 @@ def parse_one_file(inv_nr, seed, model, create_confusion_matrix=False):
     gold = [item for row in interpolated_gold for item in row]
 
     #uncomment following line if you want to write predictions to df to check and compare predicted labels per token to gold and to lexical baseline
-    #write_preds_to_file('checking_output/', tokens, predictions, gold, settings)
+   # write_preds_to_file('checking_output/GloBERTise', tokens, predictions, gold, settings)
 
     #Create confusion matrix per file
     if create_confusion_matrix == True:
@@ -214,7 +214,7 @@ def calculate_mean_lexical_accuracy(seed):
     filepaths = get_filepath_list(ROOT_PATH)
 
     accuracies = []
-    model = 'bert-base-multilingual-cased' #this defines which tokenizer you use, depending on the tokenizer you use, lexical baseline results will slightly differ #in paper: mBERT
+    model = 'GloBERTise' #this defines which tokenizer you use, depending on the tokenizer you use, lexical baseline results will slightly differ #in paper: mBERT
 
     for inv_nr in INV_NRS:
 
@@ -345,7 +345,7 @@ def get_average_lexical_scores():
     scoretypes = ['lex_precision', 'lex_recall', 'lex_f1']
     scores = {}
 
-    model = 'bert-base-multilingual-cased' #this defines which tokenizer you use, depending on the tokenizer you use, lexical baseline results will slightly differ #results in paper: mBERT
+    model = 'GloBERTise' #this defines which tokenizer you use, depending on the tokenizer you use, lexical baseline results will slightly differ #results in paper: mBERT
     for score in scoretypes:
         scores_seeds = []
         for seed in SEEDS:
@@ -469,13 +469,15 @@ def get_f1(model):
                 scores_inv_nrs.append(d[score])
             scores_seeds[seed] = ((sum(scores_inv_nrs) / len(INV_NRS))*1000000)
         return (scores_seeds)
+
 def get_all_f1():
 
     """
     gets f1 scores for all models
     outputs a dictionary with models as keys and dictionaries as values, this dictionary has seeds as keys and f1 scores as values
     """
-    models = ["GysBERT", "GysBERT-v2", "xlm-roberta-base", "bert-base-dutch-cased", 'robbert-v2-dutch-base', 'bert-base-multilingual-cased']
+
+    models = ["GloBERTise", "GysBERT", "GysBERT-v2", "xlm-roberta-base", "bert-base-dutch-cased", 'robbert-v2-dutch-base', 'bert-base-multilingual-cased']
 
     complete_dict = {}
     for model in models:
@@ -548,12 +550,12 @@ def create_table_for_datasplits(model):
 
 
 def write_datasplit_table_per_model():
-    models = ["GysBERT", "GysBERT-v2", "xlm-roberta-base", "bert-base-dutch-cased", 'robbert-v2-dutch-base', 'bert-base-multilingual-cased']
+    models = ["GloBERTise", "GysBERT", "GysBERT-v2", "xlm-roberta-base", "bert-base-dutch-cased", 'robbert-v2-dutch-base', 'bert-base-multilingual-cased']
 
     for model in models:
         model_per_fold = create_table_for_datasplits(model)
         df = pd.DataFrame.from_dict(model_per_fold)
-        df.to_csv('results/Results_per_datasplit/datasplit_tables_check/'+model+'.csv')
+        df.to_csv('results/Results_per_datasplit/'+model+'.csv')
 
 
 def get_main_results():
@@ -566,23 +568,25 @@ def get_main_results():
     """
 
     #defining models to be evaluated
-    modelnames = ["bert-base-dutch-cased","GysBERT", "GysBERT-v2", "xlm-roberta-base", 'robbert-v2-dutch-base', 'bert-base-multilingual-cased']
+    modelnames = ['GloBERTise']
+    #modelnames = ['bert-base-multilingual-cased', "bert-base-dutch-cased","GysBERT", "GysBERT-v2", "xlm-roberta-base", 'robbert-v2-dutch-base']
     #modelnames = ["MacBERTh", "bert-base-cased", 'roberta-base']
 
-    print("AVERAGE SCORES EVERYTHING")
+
+    print("AVERAGE SCORES")
     average_scores = get_average_scores_table(modelnames)
     print(average_scores)
 
     #write scores to file
     df = pd.DataFrame.from_dict(average_scores)
-    df.to_csv('results/Averages_precision_recall_f1/AVERAGES-checkbeforepush.csv', sep='\t')
+    df.to_csv('results/Averages_precision_recall_f1/AVERAGES-GloBERTise.csv', sep='\t')
     print()
 
     print("Standard Deviation")
-    #scores_std_2=get_avg_std_comp2(modelnames)
+    scores_std_2=get_avg_std_comp2(modelnames)
     print()
     #print(scores_std_2)
     df = pd.DataFrame.from_dict(scores_std_2)
-    df.to_csv('results/Standard_deviation/stand_dev_comp2_dutch-checkbeforepush.csv', sep='\t')
+    df.to_csv('results/Standard_deviation/stand_dev_comp2-GloBERTise.csv', sep='\t')
 
 get_main_results()
