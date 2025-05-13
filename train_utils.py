@@ -23,6 +23,8 @@ def initiate_tokenizer(settings):
         tokenizer = BertTokenizerFast.from_pretrained('google-bert/bert-large-cased')
     if settings['tokenizer'] == 'emanjavacas/MacBERTh':
         tokenizer = BertTokenizerFast.from_pretrained('emanjavacas/MacBERTh')
+    if settings['tokenizer'] == 'globalise/GloBERTise':
+        tokenizer = RobertaTokenizerFast.from_pretrained('globalise/GloBERTise')
     return(tokenizer)
 
 

@@ -187,45 +187,6 @@ def token_level_per_sentence(sentence, predictions, gold, tokenizername):   ###C
     new_preds = delete_multiple_at_indices(predictions, to_delete)
     new_gold = delete_multiple_at_indices(gold, to_delete)
 
-    if tokenizername.startswith("globert"): ### this code is not used at the moment
-        # Result containers
-        joined_tokens = []
-        new_preds = []
-        new_gold = []
-
-        # read in reformatted vocab
-        with open('globertokenizer/tokenizer_from_scratch/reformatted/vocab.json') as infile:
-            data = infile.read()
-        #vocab_dict = ast.literal_eval(data)
-
-        # Temporary variables for the current word being built
-        current_token = ""
-        current_label = None
-        current_gold = None
-
-        for i, (subtoken, label, gold) in enumerate(zip(sentence, predictions, gold)):
-            for i, tok in enumerate(sentence):
-                #for key, value in vocab_dict.items():
-                if '_'+tok in data:
-                    # If we already have a word being built, save it
-                    if current_token:
-                        joined_tokens.append(current_token)
-                        new_preds.append(current_label)
-                        new_gold.append(current_gold)
-                    # Start a new word
-                    current_token = subtoken #.lstrip('▁')  # Remove leading '▁' for the word
-                    current_label = label
-                    current_gold = gold
-                else:
-                    # Append the subtoken to the current word
-                    current_token += subtoken
-
-                # Handle the last token (flush remaining word)
-                if i == len(sentence) - 1:
-                    joined_tokens.append(current_token)
-                    new_preds.append(current_label)
-                    new_gold.append(current_gold)
-
     if tokenizername.startswith("FacebookAI/xlm"):
         # Result containers
         joined_tokens = []
@@ -258,7 +219,7 @@ def token_level_per_sentence(sentence, predictions, gold, tokenizername):   ###C
                 new_preds.append(current_label)
                 new_gold.append(current_gold)
 
-    if tokenizername.startswith("pdelobelle") or tokenizername.startswith("FacebookAI/roberta"):
+    if tokenizername.startswith("pdelobelle") or tokenizername.startswith("FacebookAI/roberta") or tokenizername.startswith("glob"):
 
         # clean up encoding errors
         new_subtokens = []
@@ -292,7 +253,6 @@ def token_level_per_sentence(sentence, predictions, gold, tokenizername):   ###C
         current_gold = None
 
         for i, (subtoken, label, gold) in enumerate(zip(new_subtokens, predictions, gold)):
-            print(subtoken, label, gold)
             if subtoken.startswith('Ġ'):  # new word detected
                 # If we already have a word being built, save it
                 if current_token:

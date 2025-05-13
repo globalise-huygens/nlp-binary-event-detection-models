@@ -190,7 +190,7 @@ def construct_datadicts(tokenizername, tokenizer, filepaths, testfile_names):
     corpus_tr = read_data(trainpaths)
     corpus_te = read_data(testpaths)
 
-    if tokenizername.startswith('pdelobelle') or tokenizername.startswith("FacebookAI/roberta"): #add spaces to each token when using robbert so that it marks subtokens during procesing
+    if tokenizername.startswith('pdelobelle') or tokenizername.startswith("FacebookAI/roberta") or tokenizername.startswith('glob'): #add spaces to each token when using robbert so that it marks subtokens during procesing
         tokenized_and_labeled_tr = tokenize_and_choose_label_robbert(tokenizer, corpus_tr)
         tokenized_and_labeled_te = tokenize_and_choose_label_robbert(tokenizer, corpus_te)
     else:

@@ -13,7 +13,7 @@ import os
 from datetime import date
 import click
 
-OUTPUT_PATH = 'output_in_batches/'
+OUTPUT_PATH = 'output_in_batches_GloBERTise/'
 
 def create_settings(root_path, inv_nr, tokenizername, modelname, seed, label_list):
     """
@@ -60,7 +60,6 @@ def initiate(settings, root_path):
     return(tokenizername, tokenizer, testfile_names, filepaths, model, data_collator)
 
 
-
 @click.command()
 @click.option('--seed', type=click.INT)
 @click.option('--inv_nr', type=click.STRING)
@@ -75,6 +74,7 @@ def main(root_path, inv_nr, tokenizername, modelname, seed, label_list):
     # check versioning on external server
     print("VERSIONS")
     print(transformers.__version__)
+    print(torch.__version__) # on snellius: 1.12
     print(evaluate.__version__)
 
     # on snellius: 4.32.1
