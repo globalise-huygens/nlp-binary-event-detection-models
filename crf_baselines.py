@@ -1,4 +1,4 @@
-### code from https://www.geeksforgeeks.org/conditional-random-fields-crfs-for-pos-tagging-in-nlp/
+### initial code from https://www.geeksforgeeks.org/conditional-random-fields-crfs-for-pos-tagging-in-nlp/
 import sklearn_crfsuite
 from sklearn_crfsuite import metrics as metrics
 import numpy as np
@@ -7,6 +7,7 @@ from gensim.models import Word2Vec
 from utils import get_filepaths
 from get_data_selection import get_filepath_list, file_selection_invnr
 import pandas as pd
+from evaluation_in_batches import find_event_groups
 
 ROOT_PATH = 'data/json_per_doc'
 W2VK = Word2Vec().wv.load_word2vec_format('word2vec/GLOBALISE.word2vec')
@@ -208,6 +209,34 @@ def print_scores(y_test, y_pred):
     print('macro recall: ', metrics.flat_recall_score(y_test, y_pred, average = 'macro'))
     print('macro f1: ', metrics.flat_f1_score(y_test, y_pred, average = 'macro'))
 
+
+def calculate_accuracy(y_test, y_pred):
+    """
+      Calculates the mean accuracy for mention span overlap over all inventory numbers of one model + seed combination
+      :param seed: str
+      :param inv_nr: str
+      :param model: str
+      """
+
+    predicted = [item for row in y_pred for item in row]
+    gold = [item for row in y_test for item in row]
+
+    gold_mentions = find_event_groups(gold)
+    predicted_mentions = find_event_groups(predicted)
+
+    overlap_count = 0
+    for gm in gold_mentions:
+        for pm in predicted_mentions:
+            # Check if there's an overlap by seeing if there's any intersection between the two groups
+            if any(i in gm for i in pm):
+                overlap_count += 1
+                break  # Once we find an overlap for this group, no need to check further for this group
+
+
+    accuracy = (overlap_count / len(gold_mentions)) * 100
+
+    return (accuracy)
+
 def calculate_score_event_class(y_test, y_pred):
 
     predictions = []
@@ -249,7 +278,9 @@ def calculate_score_event_class(y_test, y_pred):
     except ZeroDivisionError:
         f1 = 0
 
-    return (precision, recall, f1)
+    accuracy = calculate_accuracy(y_test, y_pred)
+
+    return (precision, recall, f1, accuracy)
 
 def train_and_evaluate_per_testfile(testfilename):
     corpus_tr, corpus_te = construct_datasplit(testfilename)
@@ -263,34 +294,37 @@ def train_and_evaluate_per_testfile(testfilename):
     print_scores(y_test, y_pred)
     print()
     print('scores for event class:')
-    precision, recall, f1 = calculate_score_event_class(y_test, y_pred)
+    precision, recall, f1, accuracy = calculate_score_event_class(y_test, y_pred)
     print('event precision: ', precision)
     print('event recall: ', recall)
     print('event f1: ', f1)
 
-    return(precision, recall, f1)
+    return(precision, recall, f1, accuracy)
 
 def get_average_scores():
 
     all_precision = []
     all_recall = []
     all_f1 = []
+    all_accuracy = []
 
     inv_nrs = ['1160', '1066', '7673', '11012', '9001', '1348', '4071', '1090', '1430', '2665', '1439', '1595', '2693',
                '3476', '8596']
     for inv_nr in inv_nrs:
         settings = file_selection_invnr(ROOT_PATH, inv_nr)
-        precision, recall, f1 = train_and_evaluate_per_testfile(settings['metadata_testfile']['original_filename'])
+        precision, recall, f1, accuracy = train_and_evaluate_per_testfile(settings['metadata_testfile']['original_filename'])
         all_precision.append(precision)
         all_recall.append(recall)
         all_f1.append(f1)
+        all_accuracy.append(accuracy)
 
     avg_precision = sum(all_precision) / len(inv_nrs)
     avg_recall = sum(all_recall) / len(inv_nrs)
     avg_f1 = sum(all_f1) / len(inv_nrs)
+    avg_accuracy = sum(all_accuracy) / len(all_accuracy)
 
     average_scores = {}
-    average_scores['CRF'] = {'P-event': avg_precision, 'R-event': avg_recall, 'f1-event:': avg_f1}
+    average_scores['CRF'] = {'P-event': avg_precision, 'R-event': avg_recall, 'f1-event:': avg_f1, 'mean_accuracy': avg_accuracy}
 
     print(average_scores)
 
@@ -299,7 +333,7 @@ def get_average_scores():
 
 average_scores = get_average_scores()
 df = pd.DataFrame.from_dict(average_scores)
-df.to_csv('results/Averages_precision_recall_f1/AVERAGES-CRF.csv', sep='\t')
+df.to_csv('results/Averages_precision_recall_f1/AVERAGES-CRF-new.csv', sep='\t')
 
 
 print("end")

@@ -589,4 +589,4 @@ def get_main_results():
     df = pd.DataFrame.from_dict(scores_std_2)
     df.to_csv('results/Standard_deviation/stand_dev_comp2-GloBERTise.csv', sep='\t')
 
-get_main_results()
+#get_main_results()
