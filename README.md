@@ -1,4 +1,9 @@
-# nlp-binary-event-detection-models
+# Language Models Lack Temporal Generalization and Bigger is Not Better
+
+This repo contains code and results reported on in our [paper](https://aclanthology.org/2025.findings-acl.1060.pdf)
+
+## General info
+
 Code to fine-tune models for binary event detection on annotated documents on an HPC and evaluate locally.
 
 This is work that builds on https://github.com/globalise-huygens/nlp-event-testset-experiment
@@ -7,7 +12,7 @@ This is work that builds on https://github.com/globalise-huygens/nlp-event-tests
 
 This repo contains code to fine-tune models on a 15-fold datasplit. For each datasplit, one annotated document is excluded from the training set on which a model is fine-tuned. This document is referred to with its inventory number (as documented in the VOC archives). The excluded document serves as validation data in the evaluation step that happens later. The code in this repo fine-tunes four different models, each with five set seeds. The shell script to run this code is _finetune.sh_. This shell script runs _finetune_with_click.py_, which in turn relies on i) _get_data_selection.py_ for creating the datasplits and storing metadata on each test file, on ii) _train_utils.py_ to initialize the appropriate tokenizer and on iii) _utils.py_ for data (pre)processing. 
 
-The models used in this version of the code are 4 Dutch models and 2 multilingual ones, namely GysBERT, GysBERT-v2, BERTje, RobBERT, XLM-Roberta and Multilingual BERT. Changing some variables in the code enables you to use some English models; BERT, RoBERTa, MacBERTh.
+The models used in this version of the code are 5 Dutch models and 2 multilingual ones, namely GysBERT, GysBERT-v2, BERTje, RobBERT, XLM-Roberta and Multilingual BERT, and our own model, GloBERTise (see our [other repo](https://github.com/globalise-huygens/GloBERTise) for code and documentation on how we created it - the model itself can be downloaded [here](https://huggingface.co/globalise/GloBERTise)). Changing some variables in the code enables you to use some English models; BERT, RoBERTa, MacBERTh.
 
 The data on which I fine-tune is stored in "data". _get_data_selection.py_ uses the subfolderstructure as well as the filenames in this directory to make datasplits and gather metadata.
 
@@ -27,4 +32,6 @@ The next step is analysing all results on model-level. In the "results" folder, 
 ## CRF baseline
 I train a Conditional Random Forest with features to compare the Language Models' performance with (as well as a lexical baseline). The main feature for this model are token embeddings derived with a specialized word2vec model, trained on our VOC corpus. The model and its documentation can be found [here](https://zenodo.org/records/15038313). To run crf_baselines.py you will need to download the word2vec model (and save it locally, in the code the hardcoded filepath is 'word2vec/GLOBALISE.word2vec')
 
+## Lexical baseline
+Our lexical baseline is thoroughly documented [here](https://github.com/globalise-huygens/nlp-event-lexical-approach). I also wrote a [blogpost](https://globalise.huygens.knaw.nl/yes-okay-but-what-were-they-doing/) on it.
 
