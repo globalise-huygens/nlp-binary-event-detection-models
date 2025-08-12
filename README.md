@@ -16,10 +16,10 @@ The models used in this version of the code are 5 Dutch models and 2 multilingua
 
 The data on which I fine-tune is stored in "data". _get_data_selection.py_ uses the subfolderstructure as well as the filenames in this directory to make datasplits and gather metadata.
 
-When running _finetune.sh_, 450 seperate models are fine-tuned (4 models x 5 seeds x 15 datasets), of which predictions are seperately stored. _finetune_with_click.py_ exports predictions of each fine-tuned model on the held-out document from the 15 ones available to a json file. In this json file, metadata on the test set and on the training arguments are also stored. Predictions on each of the 15 documents are gathered in folders that represent a model + seed combination (also reflected in the foldername, i.e. "GysBERT-553311"). These folders with predictions can be found in the "output_in_batches_nov20" folder.
+When running _finetune.sh_, 450 seperate models are fine-tuned (4 models x 5 seeds x 15 datasets), of which predictions are seperately stored. _finetune_with_click.py_ exports predictions of each fine-tuned model on the held-out document from the 15 ones available to a json file. In this json file, metadata on the test set and on the training arguments are also stored. Predictions on each of the 15 documents are gathered in folders that represent a model + seed combination (also reflected in the foldername, i.e. "GysBERT-553311"). These folders with predictions can be found in the "output_in_batches_*" folders.
 
 ## Evaluating the models
-__evaluation_in_batches.py__ processes the predictions stored in "output_in_batches_nov20" and the corresponding gold data and evaluates on token level (as opposed to subtoken level) and on mention level. Token level evaluation means binary token classification (IO). See an example underneath.
+__evaluation_in_batches.py__ processes the predictions stored in "output_in_batches_*" and the corresponding gold data and evaluates on token level (as opposed to subtoken level) and on mention level. Token level evaluation means binary token classification (IO). See an example underneath.
 
 ![Screenshot 2025-01-06 at 10 45 20](https://github.com/user-attachments/assets/de2c8841-82c7-4fcb-b856-fad5fb2caedf)
 
